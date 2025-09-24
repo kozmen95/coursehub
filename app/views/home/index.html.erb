@@ -1,0 +1,13 @@
+<div class="p-8 text-center">
+  <h1 class="text-4xl font-bold mb-4">Welcome to CourseHub 🎓</h1>
+  <p class="text-lg text-slate-600 mb-6">
+    Zarządzaj kursami, lekcjami i zapisami w prosty sposób.
+  </p>
+
+  <% if user_signed_in? %>
+    <%= link_to "Przejdź do kursów", courses_path, class: "px-6 py-3 rounded bg-blue-600 text-white hover:bg-blue-700" %>
+  <% else %>
+    <%= link_to "Zaloguj się", new_user_session_path, class: "px-6 py-3 rounded bg-slate-900 text-white hover:bg-slate-800 mr-3" %>
+    <%= link_to "Zarejestruj się", new_user_registration_path, class: "px-6 py-3 rounded bg-blue-600 text-white hover:bg-blue-700" %>
+  <% end %>
+</div>
