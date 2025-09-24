@@ -1,47 +1,40 @@
-<%= form_with(model: course, class: "contents") do |form| %>
-  <% if course.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
-      <h2><%= pluralize(course.errors.count, "error") %> prohibited this course from being saved:</h2>
+<%= form_with model: @course, local: true, html: { multipart: true }, class: "space-y-4" do |form| %>
+  <div>
+    <%= form.label :title, class: "block font-medium" %>
+    <%= form.text_field :title, class: "border p-2 rounded w-full" %>
+  </div>
 
-      <ul class="list-disc ml-6">
-        <% course.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+  <div>
+    <%= form.label :description, class: "block font-medium" %>
+    <%= form.text_area :description, rows: 5, class: "border p-2 rounded w-full" %>
+  </div>
+
+  <div>
+    <%= form.label :capacity, class: "block font-medium" %>
+    <%= form.number_field :capacity, class: "border p-2 rounded w-full" %>
+  </div>
+
+  <div>
+    <%= form.label :price_cents, "Cena (gr)", class: "block font-medium" %>
+    <%= form.number_field :price_cents, class: "border p-2 rounded w-full" %>
+  </div>
+
+  <div class="flex items-center gap-4">
+    <div class="grow">
+      <%= form.label :cover_image, "Okładka kursu", class: "block font-medium" %>
+      <%= form.file_field :cover_image, class: "block" %>
+      <p class="text-xs text-slate-500 mt-1">PNG/JPG, opcjonalnie.</p>
     </div>
-  <% end %>
 
-  <div class="my-5">
-    <%= form.label :title %>
-    <%= form.text_field :title, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": course.errors[:title].none?, "border-red-400 focus:outline-red-600": course.errors[:title].any?}] %>
+    <% if @course.cover_image.attached? %>
+      <div class="shrink-0">
+        <%= image_tag @course.cover_image, class: "h-24 w-auto rounded border" %>
+      </div>
+    <% end %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :description %>
-    <%= form.textarea :description, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": course.errors[:description].none?, "border-red-400 focus:outline-red-600": course.errors[:description].any?}] %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :capacity %>
-    <%= form.number_field :capacity, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": course.errors[:capacity].none?, "border-red-400 focus:outline-red-600": course.errors[:capacity].any?}] %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :price_cents %>
-    <%= form.number_field :price_cents, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": course.errors[:price_cents].none?, "border-red-400 focus:outline-red-600": course.errors[:price_cents].any?}] %>
-  </div>
-
-  <div class="my-5 flex items-center gap-2">
-    <%= form.label :published %>
-    <%= form.checkbox :published, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": course.errors[:published].none?, "border-red-400 focus:outline-red-600": course.errors[:published].any?}] %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :instructor_id %>
-    <%= form.text_field :instructor_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": course.errors[:instructor_id].none?, "border-red-400 focus:outline-red-600": course.errors[:instructor_id].any?}] %>
-  </div>
-
-  <div class="inline">
-    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  <div class="pt-2">
+    <%= form.submit (@course.persisted? ? "Zapisz zmiany" : "Utwórz kurs"),
+                    class: "px-4 py-2 rounded bg-indigo-600 text-white" %>
   </div>
 <% end %>

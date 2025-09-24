@@ -1,58 +1,64 @@
+# app/controllers/enrollments_controller.rb
 class EnrollmentsController < ApplicationController
-  before_action :set_enrollment, only: %i[ show edit update destroy ]
+  before_action :authenticate_user!
+  before_action :set_course
+  before_action :set_enrollment, only: [:update, :destroy]
 
-  # GET /enrollments
+  # GET /courses/:course_id/enrollments
+  # Podgląd zapisów — tylko instruktor kursu lub admin
   def index
-    @enrollments = Enrollment.all
+    authorize @course, :update? # w CoursePolicy update? = instructor kursu lub admin
+    @enrollments = @course.enrollments.includes(:user).order(created_at: :desc)
   end
 
-  # GET /enrollments/1
-  def show
-  end
-
-  # GET /enrollments/new
-  def new
-    @enrollment = Enrollment.new
-  end
-
-  # GET /enrollments/1/edit
-  def edit
-  end
-
-  # POST /enrollments
+  # POST /courses/:course_id/enrollments
+  # Student dołącza do kursu (status: pending)
   def create
-    @enrollment = Enrollment.new(enrollment_params)
+    @enrollment = @course.enrollments.find_or_initialize_by(user: current_user)
+    authorize @enrollment # EnrollmentPolicy#create? => user.student?
 
-    if @enrollment.save
-      redirect_to @enrollment, notice: "Enrollment was successfully created."
+    if @enrollment.persisted?
+      redirect_to @course, notice: "Jesteś już zapisany na ten kurs."
     else
-      render :new, status: :unprocessable_content
+      @enrollment.status = :pending
+      if @enrollment.save
+        redirect_to @course, notice: "Zgłosiłeś się na kurs ✅ (oczekuje na potwierdzenie)."
+      else
+        redirect_to @course, alert: @enrollment.errors.full_messages.to_sentence
+      end
     end
   end
 
-  # PATCH/PUT /enrollments/1
+  # PATCH /courses/:course_id/enrollments/:id
+  # Instruktor kursu lub admin zmienia status (confirmed / cancelled / pending)
   def update
-    if @enrollment.update(enrollment_params)
-      redirect_to @enrollment, notice: "Enrollment was successfully updated.", status: :see_other
+    authorize @enrollment # EnrollmentPolicy#update? => instructor kursu lub admin
+
+    new_status = params[:status].to_s.presence_in(Enrollment.statuses.keys)
+    return redirect_to(@course, alert: "Nieprawidłowy status.") unless new_status
+
+    if @enrollment.update(status: new_status)
+      redirect_to @course, notice: "Status zapisu został zmieniony ✅"
     else
-      render :edit, status: :unprocessable_content
+      redirect_to @course, alert: @enrollment.errors.full_messages.to_sentence
     end
   end
 
-  # DELETE /enrollments/1
+  # DELETE /courses/:course_id/enrollments/:id
+  # Wypisać się może właściciel zapisu albo admin
   def destroy
-    @enrollment.destroy!
-    redirect_to enrollments_path, notice: "Enrollment was successfully destroyed.", status: :see_other
+    authorize @enrollment # EnrollmentPolicy#destroy? => record.user == user lub admin
+    @enrollment.destroy
+    redirect_to @course, notice: "Wypisałeś się z kursu ❌"
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_enrollment
-      @enrollment = Enrollment.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def enrollment_params
-      params.expect(enrollment: [ :user_id, :course_id, :status, :note ])
-    end
+  def set_course
+    @course = Course.find(params[:course_id])
+  end
+
+  def set_enrollment
+    @enrollment = @course.enrollments.find(params[:id])
+  end
 end

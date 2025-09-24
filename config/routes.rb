@@ -6,7 +6,9 @@ Rails.application.routes.draw do
     resources :enrollments, only: [:index, :create, :update, :destroy]
   end
 
+  namespace :admin do
   resources :enrollments, only: [:index, :show]
+end
 
   # root teraz na stronę domową
   root "home#index"

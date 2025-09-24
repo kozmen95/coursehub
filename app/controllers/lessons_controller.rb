@@ -1,58 +1,69 @@
 class LessonsController < ApplicationController
-  before_action :set_lesson, only: %i[ show edit update destroy ]
+  before_action :authenticate_user!
+  before_action :set_course
+  before_action :set_lesson, only: [:show, :edit, :update, :destroy]
+  before_action :authorize_manage!, only: [:new, :create, :edit, :update, :destroy]
 
-  # GET /lessons
+  # GET /courses/:course_id/lessons
   def index
-    @lessons = Lesson.all
+    # każdy zalogowany może podglądać; ewentualnie ogranicz do zapisanych
+    @lessons = @course.lessons.order(starts_at: :asc)
   end
 
-  # GET /lessons/1
-  def show
-  end
+  # GET /courses/:course_id/lessons/:id
+  def show; end
 
-  # GET /lessons/new
+  # GET /courses/:course_id/lessons/new
   def new
-    @lesson = Lesson.new
+    @lesson = @course.lessons.new
   end
 
-  # GET /lessons/1/edit
-  def edit
-  end
+  # GET /courses/:course_id/lessons/:id/edit
+  def edit; end
 
-  # POST /lessons
+  # POST /courses/:course_id/lessons
   def create
-    @lesson = Lesson.new(lesson_params)
-
+    @lesson = @course.lessons.new(lesson_params)
     if @lesson.save
-      redirect_to @lesson, notice: "Lesson was successfully created."
+      redirect_to [@course, @lesson], notice: "Lekcja dodana ✅"
     else
-      render :new, status: :unprocessable_content
+      render :new, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /lessons/1
+  # PATCH/PUT /courses/:course_id/lessons/:id
   def update
     if @lesson.update(lesson_params)
-      redirect_to @lesson, notice: "Lesson was successfully updated.", status: :see_other
+      redirect_to [@course, @lesson], notice: "Lekcja zaktualizowana ✅"
     else
-      render :edit, status: :unprocessable_content
+      render :edit, status: :unprocessable_entity
     end
   end
 
-  # DELETE /lessons/1
+  # DELETE /courses/:course_id/lessons/:id
   def destroy
-    @lesson.destroy!
-    redirect_to lessons_path, notice: "Lesson was successfully destroyed.", status: :see_other
+    @lesson.destroy
+    redirect_to course_lessons_path(@course), notice: "Lekcja usunięta ✅"
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_lesson
-      @lesson = Lesson.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def lesson_params
-      params.expect(lesson: [ :course_id, :starts_at, :ends_at, :location ])
+  def set_course
+    @course = Course.find(params[:course_id])
+  end
+
+  def set_lesson
+    @lesson = @course.lessons.find(params[:id])
+  end
+
+  def lesson_params
+    params.require(:lesson).permit(:starts_at, :ends_at, :location, materials: [])
+  end
+
+  # tylko instruktor kursu lub admin mogą modyfikować lekcje
+  def authorize_manage!
+    unless current_user == @course.instructor || current_user&.admin?
+      redirect_to course_lessons_path(@course), alert: "Brak uprawnień do zarządzania lekcjami."
     end
+  end
 end
