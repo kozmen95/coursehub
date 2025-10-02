@@ -1,8 +1,8 @@
 FactoryBot.define do
   factory :lesson do
-    course { nil }
-    starts_at { "2025-09-24 12:03:04" }
-    ends_at { "2025-09-24 12:03:04" }
-    location { "MyString" }
+    title { "Test Lesson" }
+    date { 1.day.from_now }
+    location { "Sala 1" }
+    association :course
   end
 end

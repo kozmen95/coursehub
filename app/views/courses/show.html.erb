@@ -1,15 +1,81 @@
-<% content_for :title, "Showing course" %>
-
-<div class="md:w-2/3 w-full">
-  <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
-  <% end %>
-
-  <h1 class="font-bold text-4xl">Showing course</h1>
-
-  <%= render @course %>
-
-  <%= link_to "Edit this course", edit_course_path(@course), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= link_to "Back to courses", courses_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= button_to "Destroy this course", @course, method: :delete, form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+<!-- Sekcja lekcji -->
+<div class="bg-slate-800 border border-slate-700 rounded-xl shadow p-6 mb-8">
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="text-xl font-semibold text-sky-400">📚 Lekcje</h3>
+    <div class="flex gap-3">
+      <%= link_to "👁 Zobacz wszystkie", course_lessons_path(@course),
+        class: "text-sm px-3 py-2 rounded bg-slate-700 hover:bg-slate-600 text-slate-200 transition" %>
+      <% if policy(@course).create? %>
+        <%= link_to "➕ Dodaj lekcję", new_course_lesson_path(@course),
+          class: "text-sm px-3 py-2 rounded bg-indigo-600 hover:bg-indigo-500 text-white transition" %>
+      <% end %>
+    </div>
+  </div>
 </div>
+
+<!-- Sekcja zapisanych studentów -->
+<% if policy(@course).update? %>
+  <div class="bg-slate-800 border border-slate-700 rounded-xl shadow p-6 mb-8">
+    <h3 class="text-xl font-semibold text-sky-400 mb-4">👥 Zapisani studenci</h3>
+
+    <% if @course.enrollments.any? %>
+      <table class="w-full text-sm border-collapse text-slate-200">
+        <thead>
+          <tr class="bg-slate-700">
+            <th class="p-3 text-left">Student</th>
+            <th class="p-3 text-left">Email</th>
+            <th class="p-3 text-left">Status</th>
+            <th class="p-3 text-left">Akcje</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @course.enrollments.includes(:user).each do |en| %>
+            <tr class="border-t border-slate-600 hover:bg-slate-700/50">
+              <td class="p-3 font-medium"><%= en.user.email.split("@").first.capitalize %></td>
+              <td class="p-3"><%= en.user.email %></td>
+              <td class="p-3">
+                <% if en.status == "confirmed" %>
+                  <span class="px-2 py-1 rounded bg-emerald-600/30 text-emerald-300">Potwierdzony</span>
+                <% elsif en.status == "pending" %>
+                  <span class="px-2 py-1 rounded bg-yellow-600/30 text-yellow-300">Oczekuje</span>
+                <% else %>
+                  <span class="px-2 py-1 rounded bg-rose-600/30 text-rose-300">Odrzucony</span>
+                <% end %>
+              </td>
+              <td class="p-3 space-y-2 flex flex-col">
+              <% if en.status != "confirmed" %>
+                <%= button_to "✔ Potwierdź", course_enrollment_path(@course, en, status: :confirmed),
+                              method: :patch, class: "px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-sm transition" %>
+              <% end %>
+                <% if en.status == "confirmed" %>
+                  <%= button_to "✖ Odrzuć", course_enrollment_path(@course, en, status: :cancelled),
+                              method: :patch, class: "px-3 py-1 rounded bg-rose-600 hover:bg-rose-500 text-white text-sm transition" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="text-slate-400">Brak zgłoszeń.</p>
+    <% end %>
+  </div>
+<% end %>
+
+<!-- Sekcja dla studentów -->
+<% if user_signed_in? && current_user.student? %>
+  <div class="bg-slate-800 border border-slate-700 rounded-xl shadow p-6 mt-8">
+    <% if @course.students.include?(current_user) %>
+      <% enrollment = current_user.enrollments.find_by(course: @course) %>
+      <%= button_to "🚪 Wypisz się z kursu",
+        course_enrollment_path(@course, enrollment),
+        method: :delete,
+        class: "px-5 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-medium transition" %>
+    <% else %>
+      <%= button_to "➕ Dołącz do kursu",
+        course_enrollments_path(@course),
+        method: :post,
+        class: "px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition" %>
+    <% end %>
+  </div>
+<% end %>

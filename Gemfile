@@ -44,7 +44,7 @@ group :development, :test do
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
-
+  
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 end
@@ -58,6 +58,10 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+end
+
+group :development do
+  gem "letter_opener_web"
 end
 
 
@@ -75,4 +79,14 @@ gem "factory_bot_rails"
 gem "faker"
 end
 
-gem "tailwindcss-rails", "~> 4.3"
+gem "tailwindcss-rails", "~> 2.0"
+
+gem "sidekiq", "~> 7.2"
+
+
+gem "dotenv-rails", groups: [:development, :test]
+
+gem "sidekiq-cron"
+
+gem "letter_opener", group: :development
+gem "letter_opener_web", group: :development

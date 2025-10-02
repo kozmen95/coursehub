@@ -43,6 +43,10 @@ Rails.application.configure do
   # Prevent health checks from clogging up the logs.
   config.silence_healthcheck_path = "/up"
 
+  config.action_mailer.default_url_options = { host: "twoja-domena.onrender.com", protocol: "https" }
+  config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
+
+
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
 
