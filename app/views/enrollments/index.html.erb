@@ -1,29 +1,58 @@
-<% content_for :title, "Enrollments" %>
+<% content_for :title, "Zapisani studenci" %>
 
 <div class="w-full">
   <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-700 font-medium rounded-md inline-block"><%= notice %></p>
+  <% elsif alert.present? %>
+    <p class="py-2 px-3 bg-red-50 mb-5 text-red-700 font-medium rounded-md inline-block"><%= alert %></p>
   <% end %>
 
-  <div class="flex justify-between items-center">
-    <h1 class="font-bold text-4xl">Enrollments</h1>
-    <%= link_to "New enrollment", new_enrollment_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="font-bold text-2xl">📋 Lista zapisów dla kursu: <%= @course.title %></h1>
   </div>
 
-  <div id="enrollments" class="min-w-full divide-y divide-gray-200 space-y-5">
-    <% if @enrollments.any? %>
-      <% @enrollments.each do |enrollment| %>
-        <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
-          <%= render enrollment %>
-          <div class="w-full sm:w-auto flex flex-col sm:flex-row space-x-2 space-y-2">
-            <%= link_to "Show", enrollment, class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= link_to "Edit", edit_enrollment_path(enrollment), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= button_to "Destroy", enrollment, method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
-          </div>
-        </div>
-      <% end %>
-    <% else %>
-      <p class="text-center my-10">No enrollments found.</p>
-    <% end %>
-  </div>
+  <% if @enrollments.any? %>
+    <table class="min-w-full divide-y divide-gray-200 border border-gray-300">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Student</th>
+          <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Email</th>
+          <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Status</th>
+          <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Akcje</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <% @enrollments.each do |enrollment| %>
+          <tr>
+            <td class="px-4 py-2"><%= enrollment.user.email.split("@").first %></td>
+            <td class="px-4 py-2"><%= enrollment.user.email %></td>
+            <td class="px-4 py-2 font-medium"><%= enrollment.status %></td>
+            <td class="px-4 py-2 flex space-x-2">
+              <% if policy(enrollment).update? %>
+                <% unless enrollment.confirmed? %>
+                  <%= button_to "Potwierdź", course_enrollment_path(@course, enrollment, status: :confirmed),
+                                method: :patch,
+                                class: "bg-green-600 hover:bg-green-500 text-white px-3 py-1 rounded" %>
+                <% end %>
+                <% unless enrollment.rejected? %>
+                  <%= button_to "Odrzuć", course_enrollment_path(@course, enrollment, status: :rejected),
+                                method: :patch,
+                                class: "bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded" %>
+                <% end %>
+              <% end %>
+
+              <% if policy(enrollment).destroy? %>
+                <%= button_to "Usuń", course_enrollment_path(@course, enrollment),
+                              method: :delete,
+                              class: "bg-gray-600 hover:bg-gray-500 text-white px-3 py-1 rounded",
+                              data: { turbo_confirm: "Na pewno usunąć zapis?" } %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="text-center text-gray-500 my-10">Brak zapisanych studentów.</p>
+  <% end %>
 </div>

@@ -1,13 +1,41 @@
-<div class="p-8 text-center">
-  <h1 class="text-4xl font-bold mb-4">Welcome to CourseHub 🎓</h1>
-  <p class="text-lg text-slate-600 mb-6">
-    Zarządzaj kursami, lekcjami i zapisami w prosty sposób.
-  </p>
+<div class="flex flex-col">
+<div data-controller="hello">
+  Tutaj podmieni się tekst, jeśli Stimulus działa.
+</div>
+  <!-- Hero -->
+  <section class="flex flex-col items-center justify-center text-center py-20 px-6">
+    <h1 class="text-5xl font-extrabold text-slate-800 sm:text-6xl">
+      Witamy w <span class="text-sky-600">CourseHub</span> 🎓
+    </h1>
+    <p class="mt-6 text-lg text-slate-600 max-w-xl">
+      Zarządzaj kursami, lekcjami i zapisami w prosty sposób.  
+      Ucz się szybciej i wygodniej, niezależnie gdzie jesteś.
+    </p>
+    <div class="mt-8">
+      <%= link_to "Przejdź do kursów", courses_path, 
+        class: "px-6 py-3 bg-sky-600 text-white rounded-xl font-semibold shadow hover:bg-sky-700 transition" %>
+    </div>
+  </section>
 
-  <% if user_signed_in? %>
-    <%= link_to "Przejdź do kursów", courses_path, class: "px-6 py-3 rounded bg-blue-600 text-white hover:bg-blue-700" %>
-  <% else %>
-    <%= link_to "Zaloguj się", new_user_session_path, class: "px-6 py-3 rounded bg-slate-900 text-white hover:bg-slate-800 mr-3" %>
-    <%= link_to "Zarejestruj się", new_user_registration_path, class: "px-6 py-3 rounded bg-blue-600 text-white hover:bg-blue-700" %>
-  <% end %>
+  <!-- Features -->
+  <section class="grid gap-8 sm:grid-cols-3 px-8 py-16 max-w-5xl mx-auto">
+    <div class="bg-white rounded-2xl shadow p-6 text-center">
+      <div class="text-sky-600 text-4xl mb-4">📚</div>
+      <h3 class="text-xl font-bold text-slate-700">Kursy</h3>
+      <p class="mt-2 text-slate-600">Twórz i zarządzaj swoimi kursami w prostym interfejsie.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-6 text-center">
+      <div class="text-sky-600 text-4xl mb-4">📅</div>
+      <h3 class="text-xl font-bold text-slate-700">Lekcje</h3>
+      <p class="mt-2 text-slate-600">Organizuj lekcje z datami i przypomnieniami mailowymi.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-6 text-center">
+      <div class="text-sky-600 text-4xl mb-4">👥</div>
+      <h3 class="text-xl font-bold text-slate-700">Zapisy</h3>
+      <p class="mt-2 text-slate-600">Prosty system zapisów i akceptacji studentów.</p>
+    </div>
+  </section>
+
 </div>

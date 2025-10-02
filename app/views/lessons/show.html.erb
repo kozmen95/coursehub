@@ -1,3 +1,4 @@
+<div class="bg-slate-800 border border-slate-700 rounded-xl shadow-lg p-6 w-full flex flex-col justify-between hover:shadow-lg transition">
 <h2 class="text-xl font-bold mb-4">Szczegóły lekcji</h2>
 <% if @lesson.materials.attached? %>
   <h3 class="text-lg font-semibold mt-6 mb-2">Materiały</h3>
@@ -13,4 +14,5 @@
 
 <div class="mt-4">
   <%= link_to "Wróć do listy", course_lessons_path(@course), class: "text-indigo-600 hover:underline" %>
+</div>
 </div>

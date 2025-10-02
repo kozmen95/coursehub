@@ -1,4 +1,4 @@
 class HomeController < ApplicationController
-  def index
-  end
+  skip_after_action :verify_policy_scoped, only: :index
+  skip_after_action :verify_authorized, only: :index
 end

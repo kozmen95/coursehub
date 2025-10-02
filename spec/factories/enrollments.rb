@@ -1,8 +1,7 @@
 FactoryBot.define do
   factory :enrollment do
-    user { nil }
-    course { nil }
-    status { 1 }
-    note { "MyText" }
+    association :user
+    association :course
+    status { :confirmed }
   end
 end

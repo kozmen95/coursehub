@@ -1,16 +1,27 @@
 class EnrollmentPolicy < ApplicationPolicy
-  # tworzy student zapis do konkretnego kursu
   def create?
-    user&.student?
+    user.student? # student może się zapisywać
   end
 
-  # potwierdzanie/odrzucanie przez instruktora kursu lub admina
   def update?
-    record.course.instructor == user || user&.admin?
+    user.admin? || (user.instructor? && record.course.instructor == user)
   end
 
-  # wypisać się może właściciel zapisu albo admin
   def destroy?
-    record.user == user || user&.admin?
+    user.admin? || record.user == user
+  end
+
+  def index?
+    update? # tylko instruktor kursu lub admin widzą listę
+  end
+
+  class Scope < Scope
+    def resolve
+      if user.admin?
+        scope.all
+      else
+        scope.where(user: user)
+      end
+    end
   end
 end

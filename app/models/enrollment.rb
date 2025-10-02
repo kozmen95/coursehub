@@ -9,11 +9,11 @@ class Enrollment < ApplicationRecord
 
   private
 
-  def course_has_capacity
-    return if course.capacity.blank? # brak limitu
-    taken = course.enrollments.where(status: [:pending, :confirmed]).count
-    if taken >= course.capacity
-      errors.add(:base, "Kurs jest pełny")
+
+ def course_has_capacity
+    return unless course.present? && course.capacity.present?
+    if course.full?
+      errors.add(:base, "Brak miejsc w tym kursie 🚫")
     end
   end
 end

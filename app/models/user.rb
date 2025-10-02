@@ -8,5 +8,7 @@ class User < ApplicationRecord
 
   has_many :enrollments, dependent: :destroy
   has_many :courses, through: :enrollments
-  has_many :taught_courses, class_name: "Course", foreign_key: :instructor_id
+  has_many :instructor_courses, class_name: "Course", foreign_key: :instructor_id
+
+   has_one_attached :avatar
 end

@@ -1,21 +1,22 @@
 # app/controllers/courses_controller.rb
 class CoursesController < ApplicationController
+  skip_after_action :verify_authorized, only: :index
   before_action :authenticate_user!, except: [:index, :show]
   before_action :set_course, only: [:show, :edit, :update, :destroy]
 
   # GET /courses
   def index
-    @courses = Course.order(created_at: :desc)
+    @courses = policy_scope(Course)
   end
 
+  
   # GET /courses/:id
   def show
-    # publiczny podgląd kursu
+    authorize @course
   end
 
-  # GET /courses/new
   def new
-    @course = Course.new
+    @course = current_user.taught_courses.build
     authorize @course
   end
 
@@ -24,14 +25,12 @@ class CoursesController < ApplicationController
     authorize @course
   end
 
-  # POST /courses
+    # POST /courses
   def create
-    @course = Course.new(course_params)
-    @course.instructor = current_user
+    @course = current_user.taught_courses.build(course_params)
     authorize @course
-
     if @course.save
-      redirect_to @course, notice: "Kurs został utworzony ✅"
+      redirect_to @course, notice: "Kurs utworzony ✅"
     else
       render :new, status: :unprocessable_entity
     end
@@ -62,6 +61,9 @@ class CoursesController < ApplicationController
 
   # dopasuj do swoich kolumn w tabeli courses
   def course_params
-    params.require(:course).permit(:title, :description, :capacity, :price_cents, :published, :cover_image)
+    params.require(:course).permit(
+      :title, :description, :capacity, :price_cents, :published, :cover_image,
+      lessons_attributes: [:id, :title, :date, :location, :_destroy]
+    )
   end
 end

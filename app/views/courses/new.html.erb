@@ -1,20 +1,6 @@
-<h1 class="text-2xl font-bold mb-4">Nowy kurs</h1>
-<div class="mb-4">
-  <%= form.label :cover_image, class: "block font-medium" %>
-  <%= form.file_field :cover_image, class: "block" %>
+<div class="flex justify-center bg-slate-100">
+  <div class="w-full max-w-2xl bg-white shadow-md rounded-lg p-8">
+    <h2 class="text-2xl font-bold text-slate-800 mb-6">➕ Nowy kurs</h2>
+    <%= render "form", course: @course %>
+  </div>
 </div>
-<%= form_with model: @course, local: true do |f| %>
-  <div class="mb-4">
-    <%= f.label :title %>
-    <%= f.text_field :title, class: "border p-2 w-full" %>
-  </div>
-  <div class="mb-4">
-    <%= f.label :description %>
-    <%= f.text_area :description, class: "border p-2 w-full" %>
-  </div>
-  <div class="mb-4">
-    <%= f.label :capacity %>
-    <%= f.number_field :capacity, class: "border p-2 w-full" %>
-  </div>
-  <%= f.submit "Dodaj kurs", class: "bg-indigo-600 text-white px-4 py-2 rounded" %>
-<% end %>

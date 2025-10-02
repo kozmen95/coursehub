@@ -1,0 +1,7 @@
+:concurrency: 5
+:schedule:
+  lesson_reminder:
+    cron: "*/5 * * * *" # co 5 minut dla testów
+    class: "LessonReminderWorker"
+    args:
+      - 1
