@@ -2,14 +2,14 @@ default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+  username: <%= ENV["PGUSER"] || "postgres" %>
+  password: <%= ENV["PGPASSWORD"] || "password" %>
+  host: <%= ENV["PGHOST"] || "localhost" %>
+  port: <%= ENV["PGPORT"] || 5432 %>
 
 development:
   <<: *default
   database: coursehub_development
-  username: postgres
-  password: <%= ENV.fetch("PGPASSWORD", "1234") %>
-  host: 127.0.0.1
-  port: 5432
 
 test:
   <<: *default
