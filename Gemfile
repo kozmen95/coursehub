@@ -72,7 +72,7 @@ gem "factory_bot_rails"
 gem "faker"
 end
 
-gem "tailwindcss-rails", "~> 2.0"
+gem "tailwindcss-rails", "~> 4.3"
 
 gem "sidekiq", "~> 7.2"
 
