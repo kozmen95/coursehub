@@ -3,36 +3,49 @@
 <% if @lessons.any? %>
   <div class="space-y-2">
     <% @lessons.each do |lesson| %>
-     <div class="bg-slate-800 border border-slate-700 rounded-xl shadow-lg p-6 w-full flex flex-col justify-between hover:shadow-lg transition">
+      <div class="bg-slate-800 border border-slate-700 rounded-xl shadow-lg p-6 w-full flex flex-col justify-between hover:shadow-lg transition">
         <div>
-          <h2 class="text-lg font-bold text-white mb-2">
-            📅 <%= lesson.date.present? ? lesson.date.strftime("%d-%m-%Y %H:%M") : "Brak daty" %>
-          </h2>
-          <p class="text-slate-300 mb-2">📍 Miejsce: <%= lesson.location.present? ? lesson.location : "Brak lokalizacji"%></p>
+          <h3 class="text-lg font-bold text-white mb-1">
+            📖 <%= lesson.title.presence || "Bez tytułu" %>
+          </h3>
+          <% if lesson.date.present? %>
+            <p class="text-slate-400 text-sm mb-2">📅 <%= lesson.date.strftime("%Y-%m-%d") %></p>
+          <% end %>
+          <p class="text-slate-300 mb-1">
+            ⏰ <%= lesson.starts_at&.strftime("%H:%M") || "Brak godziny" %> → 
+            <%= lesson.ends_at&.strftime("%H:%M") || "Brak godziny" %>
+          </p>
+          <p class="text-slate-300 mb-2">
+            📍 <%= lesson.location.presence || "Brak lokalizacji" %>
+          </p>
         </div>
 
         <div class="flex gap-2 mt-4">
           <%= link_to "👁 Podgląd", course_lesson_path(@course, lesson),
                       class: "bg-slate-700 hover:bg-slate-600 text-white px-3 py-1 rounded" %>
 
-          <%= link_to "✏️ Edytuj", edit_course_lesson_path(@course, lesson),
-                      class: "bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded" %>
+          <% if policy(lesson).update? %>
+            <%= link_to "✏️ Edytuj", edit_course_lesson_path(@course, lesson),
+                        class: "bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded" %>
+          <% end %>
 
-          <%= link_to "🗑 Usuń", course_lesson_path(@course, lesson),
-                      method: :delete,
-                      data: { confirm: "Na pewno usunąć lekcję?" },
-                      class: "bg-rose-600 hover:bg-rose-500 text-white px-3 py-1 rounded" %>
+          <% if policy(lesson).destroy? %>
+            <%= button_to "🗑 Usuń", course_lesson_path(@course, lesson),
+                        method: :delete,
+                        data: { confirm: "Na pewno usunąć lekcję?" },
+                        class: "bg-rose-600 hover:bg-rose-500 text-white px-3 py-1 rounded" %>
+          <% end %>
         </div>
       </div>
-
     <% end %>
   </div>
 <% else %>
   <p class="text-slate-600">Brak lekcji.</p>
 <% end %>
 
-<% if policy(@lessons).create?  %>
+<% if policy(Lesson.new(course: @course)).create? %>
   <div class="mt-4">
-    <%= link_to "Dodaj lekcję", new_course_lesson_path(@course), class: "px-4 py-2 rounded bg-indigo-600 text-white" %>
+    <%= link_to "➕ Dodaj lekcję", new_course_lesson_path(@course),
+                class: "px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700 transition" %>
   </div>
 <% end %>

@@ -1,21 +1,33 @@
-
-
 <%= form_with model: [@course, @lesson], local: true, class: "space-y-4" do |f| %>
+  <div>
+    <%= f.label :title, "Tytuł lekcji", class: "block font-medium text-slate-600" %>
+    <%= f.text_field :title, class: "border p-2 rounded w-full text-slate-600" %>
+  </div>
+
+  <div>
+    <%= f.label :date, "Data lekcji", class: "block font-medium text-slate-600" %>
+    <%= f.date_field :date, class: "border p-2 rounded w-full text-slate-600" %>
+  </div>
+
   <div>
     <%= f.label :materials, "Materiały", class: "block font-medium text-slate-600" %>
     <%= f.file_field :materials, multiple: true, class: "block text-slate-600" %>
   </div>
+
   <div>
     <%= f.label :starts_at, "Zaczyna się o", class: "block font-medium text-slate-600" %>
     <%= f.datetime_local_field :starts_at, class: "border p-2 rounded w-full text-slate-600" %>
   </div>
+
   <div>
     <%= f.label :ends_at, "Kończy się o", class: "block font-medium text-slate-600" %>
     <%= f.datetime_local_field :ends_at, class: "border p-2 rounded w-full text-slate-600" %>
   </div>
+
   <div>
     <%= f.label :location, "Miejsce", class: "block font-medium text-slate-600" %>
     <%= f.text_field :location, class: "border p-2 rounded w-full text-slate-600" %>
   </div>
-  <%= f.submit "Zapisz lekcje", class: "px-4 py-2 rounded bg-indigo-600 text-white" %>
+
+  <%= f.submit "Zapisz lekcję", class: "px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700 transition" %>
 <% end %>

@@ -3,6 +3,9 @@ class LessonsController < ApplicationController
   before_action :set_course
   before_action :set_lesson, only: [:show, :edit, :update, :destroy]
 
+
+  after_action :verify_authorized, except: :index
+  after_action :verify_policy_scoped, only: :index
   # GET /courses/:course_id/lessons
   def index
     @lessons = policy_scope(@course.lessons).order(starts_at: :asc)
@@ -64,6 +67,6 @@ class LessonsController < ApplicationController
   end
 
   def lesson_params
-    params.require(:lesson).permit(:starts_at, :ends_at, :location, materials: [])
+    params.require(:lesson).permit(:title, :date, :starts_at, :ends_at, :location, materials: [])
   end
 end

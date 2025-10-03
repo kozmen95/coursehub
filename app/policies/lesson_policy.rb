@@ -1,20 +1,22 @@
 class LessonPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
-      if user.admin? || user.instructor?
+      if user.present? && (user.admin? || user.instructor?)
         scope.all
       else
-        scope.all # tu możesz zawęzić np. tylko do potwierdzonych kursów, gdzie user jest zapisany
+        scope.all
+        # albo tu np. scope.joins(:course).where(courses: { id: user.enrolled_course_ids }) jeśli chcesz zawęzić
       end
     end
   end
 
   def show?
-    true # każdy może podejrzeć lekcję, ewentualnie zawęzić do zapisanych studentów
+    true
+    # lub np. user.present? && (user.admin? || user.instructor? || record.course.students.include?(user))
   end
 
   def create?
-    user.admin? || (user.instructor? && record.course.instructor == user)
+    admin? || (instructor? && record.course.instructor == user)
   end
 
   def update?

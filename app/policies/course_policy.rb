@@ -10,18 +10,18 @@ class CoursePolicy < ApplicationPolicy
   end
 
   def new?
-    user.instructor? || user.admin?
+    user.present? && (user.instructor? || user.admin?)
   end
 
   def create?
-    user.instructor? || user.admin?
+    user.present? && (user.instructor? || user.admin?)
   end
 
   def update?
-    user.admin? || (user.instructor? && record.instructor == user)
+    user.present? && (user.admin? || (user.instructor? && record.instructor == user))
   end
 
   def destroy?
-    user.admin? || (user.instructor? && record.instructor == user)
+    user.present? && (user.admin? || (user.instructor? && record.instructor == user))
   end
 end

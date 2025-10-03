@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ApplicationPolicy
   attr_reader :user, :record
 
@@ -34,6 +32,19 @@ class ApplicationPolicy
 
   def destroy?
     false
+  end
+
+  # 👉 dodatkowe helpery
+  def admin?
+    user.present? && user.admin?
+  end
+
+  def instructor?
+    user.present? && user.instructor?
+  end
+
+  def student?
+    user.present? && user.student?
   end
 
   class Scope
