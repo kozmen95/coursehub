@@ -1,4 +1,4 @@
-<div class="bg-slate-800 border border-slate-700 rounded-xl shadow p-6 w-full flex flex-col justify-between hover:shadow-lg transition">
+<div class="bg-slate-800 border border-slate-700 rounded-xl shadow p-6 w-full course_card flex flex-col justify-between hover:shadow-lg transition">
   <!-- Nagłówek -->
   <div class="mb-4">
     <h2 class="text-xl font-bold text-sky-400"><%= course.title %></h2>
@@ -24,8 +24,12 @@
   </p>
 
   <p>
-    <span class="font-semibold">💰 Price:</span>
-    <%= number_to_currency(course.price_cents / 100.0, unit: "PLN") %>
+    <span class="font-semibold">💰 Cena:</span>
+    <%= number_to_currency(course.price_cents / 100.0,
+          unit: "zł",
+          separator: ",",
+          delimiter: " ",
+          format: "%n %u") %>
   </p>
 
   <p>
@@ -39,20 +43,23 @@
 </div>
 
   <!-- Akcje -->
-  <div class="flex flex-wrap gap-2 mt-6">
-    <%= link_to "👁 Show",
-      course_path(course),
-      class: "flex-1 text-center rounded-lg px-6 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium transition" %>
+  <div class="flex flex-wrap gap-3 mt-6">
+    <%= link_to course_path(course),
+        class: "flex items-center justify-center gap-2 rounded-lg px-5 py-2 bg-slate-700 hover:bg-slate-600 text-slate-100 font-medium transition" do %>
+      👁 <span>Pokaż</span>
+    <% end %>
 
     <% if user_signed_in? && (course.instructor == current_user || current_user.admin?) %>
-      <%= link_to "✏️ Edit",
-        edit_course_path(course),
-        class: "flex-1 text-center rounded-lg px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition" %>
+      <%= link_to edit_course_path(course),
+          class: "flex items-center justify-center gap-2 rounded-lg px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition" do %>
+        ✏️ <span>Edytuj</span>
+      <% end %>
 
-      <%= link_to "🗑 Delete",
-        course_path(course),
-        data: { turbo_method: :delete, turbo_confirm: "Na pewno?" },
-        class: "flex-1 text-center rounded-lg px-6 py-2 bg-rose-600 hover:bg-rose-500 text-white font-medium transition" %>
+      <%= link_to course_path(course),
+          data: { turbo_method: :delete, turbo_confirm: "Na pewno usunąć kurs?" },
+          class: "flex items-center justify-center gap-2 rounded-lg px-5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-medium transition" do %>
+        🗑 <span>Usuń</span>
+      <% end %>
     <% end %>
   </div>
 </div>

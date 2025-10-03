@@ -5,64 +5,77 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+
+    <!-- CSS -->
     <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+
+    <!-- JS -->
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen flex flex-col">
+  <body class="min-h-screen flex flex-col bg-gradient-to-br from-sky-50 to-slate-100">
 
     <!-- Navbar -->
-    <nav class="w-full border-b border-slate-700 shadow ">
-      <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3 bg-gradient-to-br from-sky-50 to-slate-100">
-        <a href="/" class="text-xl font-bold text-blue-400 hover:text-blue-300">CourseHub</a>
+   <nav class="w-full border-b border-slate-200 bg-white shadow">
+      <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+        <!-- Logo -->
+        <%= link_to "CourseHub", root_path, class: "text-xl font-bold text-blue-600 hover:text-blue-500 mr-3" %>
 
-        <div class="flex items-center space-x-4">
-          <% if user_signed_in? %>
-            <span class="text-sm text-slate-600">
-              Zalogowany: <b><%= current_user.email %></b> 
-            </span>
-       <% if current_user.avatar.attached? %>
-          <%= image_tag current_user.avatar.variant(resize_to_fill: [40, 40]), class: "rounded-full avatar_image" %>
+        <% if user_signed_in? %>
+          <div class="flex items-center space-x-4">
+            <!-- Avatar -->
+              <%= link_to edit_user_registration_path, class:"avatar_image" do %>
+                  <% if current_user.avatar.attached? %>
+                    <%= image_tag current_user.avatar.variant(resize_to_fill: [36, 36]),
+                                  class: "avatar_image rounded-full w-9 h-9 object-cover border border-slate-200 hover:ring-2 hover:ring-sky-400 transition" %>
+                  <% else %>
+                    <%= image_tag "default_avatar.png",
+                                  class: "avatar_image rounded-full w-9 h-9 object-cover border border-slate-200 hover:ring-2 hover:ring-sky-400 transition" %>
+                  <% end %>
+                <% end %>
+            <!-- User info -->
+            <div class="text-sm leading-tight text-slate-700">
+              <div class="font-semibold"><%= current_user.email %></div>
+              <div class="uppercase text-xs text-slate-500">Rola: <%= current_user.role %></div>
+            </div>
+
+            <!-- Logout -->
+            <%= link_to "Wyloguj", destroy_user_session_path,
+                data: { turbo_method: :delete },
+                class: "px-4 py-2 rounded bg-sky-600 text-white text-sm hover:bg-sky-700" %>
+          </div>
         <% else %>
-          <%= image_tag "default_avatar.png", class: "rounded-full avatar_image object-cover" %>
-        <% end %>
-            <span class="px-4 py-2 text-slate-800 uppercase">Rola: <%= current_user.role %></span>
-          <%= link_to "Wyloguj", destroy_user_session_path,
-              data: { turbo_method: :delete },
-              class: "px-4 py-2 rounded bg-sky-600 text-white hover:bg-sky-700 mr-3" %>
-          <% else %>
+          <div class="flex items-center space-x-2">
             <%= link_to "Zaloguj", new_user_session_path,
-              class: "px-4 py-2 rounded bg-sky-600 text-white hover:bg-sky-700 mr-3" %>
+              class: "px-4 py-2 rounded bg-sky-600 text-white text-sm hover:bg-sky-700" %>
             <%= link_to "Rejestracja", new_user_registration_path,
-              class: "px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700" %>
-          <% end %>
-        </div>
+              class: "px-4 py-2 rounded bg-blue-600 text-white text-sm hover:bg-blue-700" %>
+          </div>
+        <% end %>
       </div>
     </nav>
 
     <!-- Main -->
-    <main class="flex-1 max-w-5xl mx-auto w-full px-4 py-8 bg-gradient-to-br from-sky-50 to-slate-100">
+    <main class="flex-1 max-w-5xl mx-auto w-full px-4 py-8">
 
       <% if notice %>
-        <div class="mb-4 rounded-lg  border border-emerald-500  text-slate-600 px-4 py-3">
+        <div class="mb-4 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-700 px-4 py-3 text-sm">
           <%= notice %>
         </div>
       <% end %>
 
       <% if alert %>
-        <div class="mb-4 rounded-lg bg-rose-600/20 border border-rose-500 text-slate-600 px-4 py-3">
+        <div class="mb-4 rounded-lg border border-rose-300 bg-rose-50 text-rose-700 px-4 py-3 text-sm">
           <%= alert %>
         </div>
       <% end %>
 
       <% if defined?(resource) && resource.respond_to?(:errors) && resource.errors.any? %>
-        <div class="mb-4 rounded-lg  border border-rose-500 text-slate-600 px-4 py-3">
+        <div class="mb-4 rounded-lg border border-rose-300 bg-rose-50 text-rose-700 px-4 py-3">
           <ul class="list-disc list-inside text-sm">
             <% resource.errors.full_messages.each do |msg| %>
-              <li class="list-none"><%= msg %></li>
+              <li><%= msg %></li>
             <% end %>
           </ul>
         </div>

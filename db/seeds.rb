@@ -1,15 +1,18 @@
 admin = User.find_or_create_by!(email: "admin@example.com") do |u|
   u.password = "password"
+  u.password_confirmation = "password"
   u.role = :admin
 end
 
 inst = User.find_or_create_by!(email: "instructor@example.com") do |u|
   u.password = "password"
+  u.password_confirmation = "password"
   u.role = :instructor
 end
 
 stud = User.find_or_create_by!(email: "student@example.com") do |u|
   u.password = "password"
+  u.password_confirmation = "password"
   u.role = :student
 end
 
@@ -22,12 +25,24 @@ end
   end
 
   3.times do |j|
-    Lesson.find_or_create_by!(course: c, starts_at: (Time.current + (j+1).days).change(hour: 18), ends_at: (Time.current + (j+1).days).change(hour: 19)) do |l|
+    Lesson.find_or_create_by!(
+      course: c,
+      title: "Lekcja #{j+1} kursu #{i+1}",
+      date: (Time.current + (j+1).days).to_date,  # <-- ustawiamy date
+      starts_at: (Time.current + (j+1).days).change(hour: 18),
+      ends_at: (Time.current + (j+1).days).change(hour: 19)
+    ) do |l|
       l.location = "Sala #{j+1}"
     end
   end
 
-  Enrollment.find_or_create_by!(user: stud, course: c) { _1.status = :confirmed }
+
+  Enrollment.find_or_create_by!(user: stud, course: c) do |e|
+    e.status = :confirmed
+  end
 end
 
-puts "Seed ready. Logins: admin@ / instructor@ / student@ (hasło: password)"
+puts "Seed ready ✅. Logins: 
+- admin@example.com / password 
+- instructor@example.com / password 
+- student@example.com / password"
