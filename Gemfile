@@ -74,7 +74,7 @@ end
 
 gem "tailwindcss-rails", "~> 2.0"
 
-gem "sidekiq", "~> 7.2"
+gem "sidekiq", "~> 8.0"
 
 
 gem "dotenv-rails", groups: [:development, :test]
